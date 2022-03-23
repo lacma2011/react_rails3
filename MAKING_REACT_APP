@@ -1,24 +1,41 @@
-docker running already
+Steps to making react app. Do these steps after doing steps in HOW_I_DID_THIS which create the rails app for local dev docker host and heroku
 
 
-login
+
+Have docker container running:
+
+	docker run \
+	-p 3000:3000 \
+	-v $(pwd):/usr/src/app/ \
+	my_project
+	
+
+For steps using "rails" tool, run in the container.
+
+
+login to container:
 	docker exec -it $(docker ps -q) /bin/bash
 
 
-rails webpacker:install:react
+Create react scripts
+--------------------
 
-rm .babelrc
+(in container) run rails tool for new webpacker react app:
+	rails webpacker:install:react
 
-set perms:
+remove babel file (or rename to optionally use it again in future step for babelrc):
+	rm .babelrc
+
+(outside container) set perms:
 	sudo chmod 775 app/javascript/packs/hello_react.jsx 
 	sudo chown jj app/javascript/packs/hello_react.jsx
 
-run rails create controller pages:
+
+(in container) run rails create controller pages:
 	rails g controller pages index
 
 
-
-set perms:
+(outside container) set perms:
 	sudo chown jj app/views/pages/
 	sudo chmod 775 app/views/pages/
 	sudo chmod 775 app/views/pages/index.html.erb 
@@ -39,12 +56,17 @@ Clear the content of app/views/pages/index.html.erb then add the snippet below j
 	<%= javascript_pack_tag 'hello_react' %>
 
 
-mkdir app/javascript/components
-touch app/javascript/components/Counter.jsx
+(outside docker):
+	mkdir app/javascript/components
+	touch app/javascript/components/Counter.jsx
+
+
 
 modify Counter.jsx:
+-------------------
 
 (begin text)
+
 import React, { useState} from 'react'
 const Counter = () => {
   const [count, setCount] = useState(0);
@@ -59,11 +81,14 @@ const Counter = () => {
   )
 }
 export default Counter;
+
 (end text)
 
 
-modify hello_world.jsx:
 
+
+modify hello_world.jsx:
+-----------------------
 (begin text)
 
 import React from 'react'
@@ -93,7 +118,8 @@ From inside container, add this yarn:
 	yarn add @babel/preset-react
 	
 
-
+Done!
+-----
 Homepage now shows a counter!
 
 
