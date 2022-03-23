@@ -1,0 +1,104 @@
+docker running already
+
+
+login
+	docker exec -it $(docker ps -q) /bin/bash
+
+
+rails webpacker:install:react
+
+rm .babelrc
+
+set perms:
+	sudo chmod 775 app/javascript/packs/hello_react.jsx 
+	sudo chown jj app/javascript/packs/hello_react.jsx
+
+run rails create controller pages:
+	rails g controller pages index
+
+
+
+set perms:
+	sudo chown jj app/views/pages/
+	sudo chmod 775 app/views/pages/
+	sudo chmod 775 app/views/pages/index.html.erb 
+	sudo chown jj app/views/pages/index.html.erb
+	sudo chmod 775 app/controllers/pages_controller.rb
+	sudo chown jj app/controllers/pages_controller.rb
+	sudo chmod 775 test/controllers/pages_controller_test.rb
+	sudo chown jj test/controllers/pages_controller_test.rb
+	sudo chown jj app/helpers/pages_helper.rb
+	sudo chmod 775 app/helpers/pages_helper.rb
+	
+	
+add to config/routes.rb:
+	root 'pages#index'
+	
+Clear the content of app/views/pages/index.html.erb then add the snippet below just before the closing head tag in app/views/layouts/applcation.html.erb:
+
+	<%= javascript_pack_tag 'hello_react' %>
+
+
+mkdir app/javascript/components
+touch app/javascript/components/Counter.jsx
+
+modify Counter.jsx:
+
+(begin text)
+import React, { useState} from 'react'
+const Counter = () => {
+  const [count, setCount] = useState(0);
+  const increase = () => setCount(count+1);
+  const decrease = () => setCount(count-1);
+  return (
+    <div>
+      <button onClick={decrease}>-</button>
+      <span>{count}</span>
+      <button onClick={increase}>+</button>
+    </div>
+  )
+}
+export default Counter;
+(end text)
+
+
+modify hello_world.jsx:
+
+(begin text)
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import Counter from '../components/Counter';
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Counter/>,
+    document.body.appendChild(document.createElement('div')),
+  )
+})
+
+(end text)
+
+
+
+
+Fix babel:
+----------
+Create .babelrc:
+	{ "presets": ["@babel/preset-env", "@babel/preset-react"] }
+
+
+From inside container, add this yarn:	
+	yarn add @babel/preset-react
+	
+
+
+Homepage now shows a counter!
+
+
+
+This guide was from following some of tutorial:
+	https://blog.logrocket.com/how-to-use-react-ruby-on-rails/
+	
+
