@@ -24,7 +24,7 @@ After yarn installs, you can exit out of that container since you wont need it a
 	
 	
 
-Start up the rails server in the docker container:
+Start up the rails server using a docker container:
 
         docker run \
         -p 3000:3000 \
